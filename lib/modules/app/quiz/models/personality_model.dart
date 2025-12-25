@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class PersonalityModel extends Equatable {
   final String id;
@@ -30,8 +31,8 @@ class PersonalityModel extends Equatable {
   String? get youtubeVideoId {
     final uri = Uri.tryParse(movieClipUrl);
     if (uri == null) return null;
+    // Handle embed format
     if (uri.pathSegments.contains('embed')) {
-      // Handle embed format
       final lastSegment = uri.pathSegments.last;
       if (lastSegment == 'videoseries') {
         // It's a playlist
@@ -39,7 +40,12 @@ class PersonalityModel extends Equatable {
       }
       return lastSegment;
     }
-    return null;
+    // Handle watch?v=ID
+    if (uri.host.contains('youtube.com') && uri.path == '/watch') {
+      return uri.queryParameters['v'];
+    }
+    // Fallback: use YoutubePlayer.convertUrlToId
+    return YoutubePlayer.convertUrlToId(movieClipUrl);
   }
 
   bool get isPlaylist => movieClipUrl.contains('videoseries');

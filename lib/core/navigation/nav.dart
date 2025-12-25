@@ -34,12 +34,12 @@ extension NavExtension on Nav {
         return const MainScreen();
       case Nav.quiz:
         return BlocProvider(
-          create: (_) => di<QuizBloc>(),
+          create: (_) => di<QuizCubit>(),
           child: const QuizPage(),
         );
       case Nav.result:
         return BlocProvider(
-          create: (_) => di<ResultBloc>(),
+          create: (_) => di<ResultCubit>(),
           child: const ResultPage(),
         );
       case Nav.history:

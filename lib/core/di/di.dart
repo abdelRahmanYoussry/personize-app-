@@ -20,6 +20,6 @@ Future<void> initDI() async {
   di.registerSingleton<HistoryRepo>(HistoryRepo(di()));
 
   // Blocs
-  di.registerFactory<QuizBloc>(() => QuizBloc());
-  di.registerFactory<ResultBloc>(() => ResultBloc(di()));
+  di.registerFactory<QuizCubit>(() => QuizCubit());
+  di.registerFactory<ResultCubit>(() => ResultCubit(di()));
 }

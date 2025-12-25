@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality App Icon Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        canvas {
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+        button {
+            background: linear-gradient(135deg, #6C63FF, #4ECDC4);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: scale(1.05);
+        }
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 500px;
+        }
+        .instructions ol {
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 Personality App Icon Generator</h1>
+    <div class="container">
+        <h2>App Icon Preview</h2>
+        <canvas id="iconCanvas" width="1024" height="1024"></canvas>
+        <br>
+        <button onclick="downloadIcon('app_icon.png')">📥 Download Main Icon (1024x1024)</button>
+        <button onclick="downloadForeground()">📥 Download Foreground (for Adaptive)</button>
+
+        <div class="instructions">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Click "Download Main Icon" to save <code>app_icon.png</code></li>
+                <li>Click "Download Foreground" to save <code>app_icon_foreground.png</code></li>
+                <li>Move both files to <code>assets/icons/</code> folder in your Flutter project</li>
+                <li>Run: <code>flutter pub get</code></li>
+                <li>Run: <code>dart run flutter_launcher_icons</code></li>
+                <li>Rebuild your app!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('iconCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function drawIcon(withPadding = false) {
+            const size = 1024;
+            const padding = withPadding ? 200 : 0;
+
+            ctx.clearRect(0, 0, size, size);
+
+            if (!withPadding) {
+                // Background gradient
+                const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+                bgGrad.addColorStop(0, '#6C63FF');
+                bgGrad.addColorStop(1, '#4ECDC4');
+
+                // Rounded rectangle background
+                ctx.beginPath();
+                roundRect(ctx, 0, 0, size, size, 200);
+                ctx.fillStyle = bgGrad;
+                ctx.fill();
+            }
+
+            // Center coordinates
+            const cx = size / 2;
+            const cy = size / 2;
+            const scale = withPadding ? 0.6 : 1;
+
+            // White circle background
+            ctx.beginPath();
+            ctx.arc(cx, cy, 180 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.fill();
+
+            // Inner gradient design
+            const innerGrad = ctx.createLinearGradient(cx - 100 * scale, cy - 100 * scale, cx + 100 * scale, cy + 100 * scale);
+            innerGrad.addColorStop(0, '#FFE66D');
+            innerGrad.addColorStop(1, '#FF6B6B');
+
+            ctx.beginPath();
+            ctx.arc(cx, cy - 20 * scale, 80 * scale, 0, Math.PI * 2);
+            ctx.fillStyle = innerGrad;
+            ctx.globalAlpha = 0.3;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            // Question mark
+            ctx.font = `bold ${200 * scale}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#6C63FF';
+            ctx.fillText('?', cx, cy + 10 * scale);
+
+            // Brain-like decorative curves
+            ctx.strokeStyle = '#6C63FF';
+            ctx.lineWidth = 8 * scale;
+            ctx.lineCap = 'round';
+
+            // Left curve
+            ctx.beginPath();
+            ctx.arc(cx - 60 * scale, cy - 40 * scale, 40 * scale, Math.PI * 0.5, Math.PI * 1.5);
+            ctx.stroke();
+
+            // Right curve
+            ctx.beginPath();
+            ctx.arc(cx + 60 * scale, cy - 40 * scale, 40 * scale, Math.PI * 1.5, Math.PI * 0.5);
+            ctx.stroke();
+
+            if (!withPadding) {
+                // Decorative dots
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.beginPath();
+                ctx.arc(200, 200, 40, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.beginPath();
+                ctx.arc(824, 824, 60, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+                ctx.beginPath();
+                ctx.arc(800, 250, 30, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function roundRect(ctx, x, y, width, height, radius) {
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        function downloadIcon(filename) {
+            drawIcon(false);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function downloadForeground() {
+            drawIcon(true);
+            const link = document.createElement('a');
+            link.download = 'app_icon_foreground.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            // Redraw main icon
+            setTimeout(() => drawIcon(false), 100);
+        }
+
+        // Initial draw
+        drawIcon(false);
+    </script>
+</body>
+</html>
+

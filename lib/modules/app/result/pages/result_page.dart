@@ -30,7 +30,7 @@ class _ResultPageState extends State<ResultPage> {
         // Save result with user name
         final userName =
             di<CacheHelper>().getData(key: 'userName') ?? 'Guest User';
-        context.read<ResultBloc>().add(SaveResult(args, userName.toString()));
+        context.read<ResultCubit>().saveResult(args, userName.toString());
       }
     }
   }
@@ -46,8 +46,9 @@ class _ResultPageState extends State<ResultPage> {
       _controller = YoutubePlayerController(
         initialVideoId: videoId,
         flags: const YoutubePlayerFlags(
-          autoPlay: false,
+          autoPlay: true,
           mute: false,
+          loop: true,
           enableCaption: false,
         ),
       )..addListener(() {
@@ -78,7 +79,7 @@ class _ResultPageState extends State<ResultPage> {
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.5),
+            color: const Color(0x80000000), // 0.5 opacity black
             shape: BoxShape.circle,
           ),
           child: IconButton(
@@ -108,7 +109,7 @@ class _ResultPageState extends State<ResultPage> {
                       child: Container(
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: const Color(0x33FFFFFF), // 0.2 opacity white
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -143,7 +144,7 @@ class _ResultPageState extends State<ResultPage> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withAlpha(77), // 0.3 opacity
                             blurRadius: 20,
                             offset: const Offset(0, 8),
                           ),
@@ -200,7 +201,7 @@ class _ResultPageState extends State<ResultPage> {
                         border: Border.all(color: AppColors.cardBorder),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: const Color(0x0D000000), // 0.05 opacity black
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -303,10 +304,10 @@ class _ResultPageState extends State<ResultPage> {
                                   vertical: 10,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.secondary.withOpacity(0.1),
+                                  color: AppColors.secondary.withAlpha(26), // 0.1 opacity
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: AppColors.secondary.withOpacity(0.3),
+                                    color: AppColors.secondary.withAlpha(77), // 0.3 opacity
                                   ),
                                 ),
                                 child: Text(
@@ -393,7 +394,7 @@ class _ResultPageState extends State<ResultPage> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.4),
+                            color: AppColors.primary.withAlpha(102), // 0.4 opacity
                             blurRadius: 12,
                             offset: const Offset(0, 6),
                           ),

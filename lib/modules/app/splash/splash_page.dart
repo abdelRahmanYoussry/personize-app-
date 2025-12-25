@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test_your_personalize_app/core/navigation/nav.dart';
 import 'package:test_your_personalize_app/core/theme/app_colors.dart';
+import 'package:test_your_personalize_app/core/localization/app_localizations.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -64,7 +65,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       Container(
                         padding: const EdgeInsets.all(32),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: const Color(0x33FFFFFF), // 0.2 opacity white
                           shape: BoxShape.circle,
                         ),
                         child: const Text(
@@ -74,7 +75,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       ),
                       const SizedBox(height: 32),
                       Text(
-                        'Personality Quiz',
+                        AppLocalizations.of(context)!.translate('appTitle'),
                         style: Theme.of(context).textTheme.displayMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -82,9 +83,9 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Discover Your True Self',
+                        AppLocalizations.of(context)!.translate('appSubtitle'),
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.white.withOpacity(0.9),
+                              color: const Color(0xE6FFFFFF), // 0.9 opacity white
                             ),
                       ),
                       const SizedBox(height: 48),
