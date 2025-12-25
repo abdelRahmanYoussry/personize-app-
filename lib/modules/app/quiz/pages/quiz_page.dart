@@ -15,6 +15,9 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  int? _hoveredIndex;
+  int? _selectedIndex;
+
   final List<IconData> quizIcons = [
     Icons.question_mark,
     Icons.lightbulb_outline,
@@ -69,7 +72,8 @@ class _QuizPageState extends State<QuizPage> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 final question = StaticData.quizQuestions[state.currentIndex];
-                final progress = (state.currentIndex + 1) / state.totalQuestions;
+                final progress =
+                    (state.currentIndex + 1) / state.totalQuestions;
                 return Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
@@ -87,9 +91,16 @@ class _QuizPageState extends State<QuizPage> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              localizations.translate('questionOf')
-                                .replaceFirst('{current}', (state.currentIndex + 1).toString())
-                                .replaceFirst('{total}', state.totalQuestions.toString()),
+                              localizations
+                                  .translate('questionOf')
+                                  .replaceFirst(
+                                    '{current}',
+                                    (state.currentIndex + 1).toString(),
+                                  )
+                                  .replaceFirst(
+                                    '{total}',
+                                    state.totalQuestions.toString(),
+                                  ),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -112,17 +123,46 @@ class _QuizPageState extends State<QuizPage> {
                         ),
                       ),
                       const SizedBox(height: 32),
-                      // Question Card
-                      _buildQuestionCard(context, question, state.currentIndex, isArabic),
-                      const SizedBox(height: 32),
-                      // Answers
+                      // Question Section with Switcher
                       Expanded(
-                        child: ListView(
-                          children: question.answers
-                              .map(
-                                (answer) => _buildAnswerButton(context, answer, isArabic),
-                              )
-                              .toList(),
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          transitionBuilder: (
+                            Widget child,
+                            Animation<double> animation,
+                          ) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: SlideTransition(
+                                position: Tween<Offset>(
+                                  begin: const Offset(0.1, 0),
+                                  end: Offset.zero,
+                                ).animate(animation),
+                                child: child,
+                              ),
+                            );
+                          },
+                          child: Column(
+                            key: ValueKey<int>(state.currentIndex),
+                            children: [
+                              _buildQuestionCard(
+                                context,
+                                question,
+                                state.currentIndex,
+                                isArabic,
+                              ),
+                              const SizedBox(height: 32),
+                              // Answers
+                              ...question.answers.asMap().entries.map(
+                                (entry) => _buildAnswerButton(
+                                  context,
+                                  entry.value,
+                                  entry.key,
+                                  isArabic,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -136,7 +176,12 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 
-  Widget _buildQuestionCard(BuildContext context, QuizQuestion question, int index, bool isArabic) {
+  Widget _buildQuestionCard(
+    BuildContext context,
+    QuizQuestion question,
+    int index,
+    bool isArabic,
+  ) {
     final icon = quizIcons[index % quizIcons.length];
     return Container(
       width: double.infinity,
@@ -161,11 +206,7 @@ class _QuizPageState extends State<QuizPage> {
               gradient: AppColors.primaryGradient,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 32,
-            ),
+            child: Icon(icon, color: Colors.white, size: 32),
           ),
           const SizedBox(height: 20),
           Text(
@@ -173,47 +214,101 @@ class _QuizPageState extends State<QuizPage> {
             textAlign: TextAlign.center,
             textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  height: 1.4,
-                  fontWeight: FontWeight.bold,
-                ),
+              height: 1.4,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAnswerButton(BuildContext context, QuizAnswer answer, bool isArabic) {
+  Widget _buildAnswerButton(
+    BuildContext context,
+    QuizAnswer answer,
+    int index,
+    bool isArabic,
+  ) {
+    final isSelected = _selectedIndex == index;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            context.read<QuizCubit>().answerQuestion(answer.scores);
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              border: Border.all(color: AppColors.cardBorder, width: 1.5),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0x0D000000), // 0.05 opacity black
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+      child: AnimatedScale(
+        scale: isSelected ? 0.98 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () async {
+              final quizCubit = context.read<QuizCubit>();
+              setState(() {
+                _selectedIndex = index;
+              });
+              // Small delay to show the "selection" feel
+              await Future.delayed(const Duration(milliseconds: 200));
+              if (mounted) {
+                quizCubit.answerQuestion(answer.scores);
+                setState(() {
+                  _selectedIndex = null;
+                });
+              }
+            },
+            onHover: (hovering) {
+              setState(() {
+                _hoveredIndex = hovering ? index : null;
+              });
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color:
+                    isSelected
+                        ? AppColors.primary.withAlpha(20)
+                        : (_hoveredIndex == index
+                            ? AppColors.surface.withAlpha(200)
+                            : AppColors.surface),
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : AppColors.cardBorder,
+                  width: 1.5,
                 ),
-              ],
-            ),
-            child: Text(
-              isArabic ? answer.textArabic : answer.text,
-              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        isSelected
+                            ? AppColors.primary.withAlpha(50)
+                            : const Color(0x0D000000), // 0.05 opacity black
+                    blurRadius: isSelected ? 12 : 8,
+                    offset: const Offset(0, 2),
                   ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      isArabic ? answer.textArabic : answer.text,
+                      textDirection:
+                          isArabic ? TextDirection.rtl : TextDirection.ltr,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color:
+                            isSelected
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  if (isSelected)
+                    const Icon(
+                      Icons.check_circle,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                ],
+              ),
             ),
           ),
         ),

@@ -68,12 +68,17 @@ class AppLocalizations {
 
       // Result Page
       'yourPersonality': 'Your Personality',
+      'yourPersonalityType': 'Your Personality Type',
       'keyTraits': 'Key Traits',
       'keyTraitsAr': 'الصفات الرئيسية',
       'famousCharacters': 'Famous Characters',
       'shareResult': 'Share Result',
       'backToHome': 'Back to Home',
       'congratulations': 'Congratulations!',
+      'yourMovieScene': 'Your Movie Scene',
+      'sharingResult': 'Sharing result...',
+      'resultSaved': 'Result saved successfully',
+      'shareError': 'Error sharing result',
 
       // Personality Types
       'comedian': 'The Cheerful Comedian',
@@ -172,12 +177,17 @@ class AppLocalizations {
 
       // Result Page
       'yourPersonality': 'شخصيتك',
+      'yourPersonalityType': 'نوع شخصيتك',
       'keyTraits': 'الصفات الرئيسية',
       'keyTraitsAr': 'Key Traits',
       'famousCharacters': 'شخصيات مشهورة',
       'shareResult': 'مشاركة النتيجة',
       'backToHome': 'العودة للرئيسية',
       'congratulations': 'تهانينا!',
+      'yourMovieScene': 'مشهدك السينمائي',
+      'sharingResult': 'جاري مشاركة النتيجة...',
+      'resultSaved': 'تم حفظ النتيجة بنجاح',
+      'shareError': 'خطأ في مشاركة النتيجة',
 
       // Personality Types
       'comedian': 'الكوميدي المرح',
@@ -284,12 +294,17 @@ class AppLocalizations {
 
   // Result Page
   String get yourPersonality => translate('yourPersonality');
+  String get yourPersonalityType => translate('yourPersonalityType');
   String get keyTraits => translate('keyTraits');
   String get keyTraitsAr => translate('keyTraitsAr');
   String get famousCharacters => translate('famousCharacters');
   String get shareResult => translate('shareResult');
   String get backToHome => translate('backToHome');
   String get congratulations => translate('congratulations');
+  String get yourMovieScene => translate('yourMovieScene');
+  String get sharingResult => translate('sharingResult');
+  String get resultSaved => translate('resultSaved');
+  String get shareError => translate('shareError');
 
   // Common
   String get close => translate('close');
